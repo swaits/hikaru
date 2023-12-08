@@ -27,12 +27,19 @@ impl FromStr for Rating {
 }
 
 // estimate probability of draw given two Elo ratings
+// fn probability_of_draw(white_elo: &Rating, black_elo: &Rating) -> f64 {
+//     // Constants for draw probability estimation
+//     let max_draw_probability = 0.322; // Upper limit of draw probability
+//     let rating_difference_sensitivity = 0.01; // Adjusts sensitivity to rating difference
+//     let rating_diff = (black_elo.0 as f64 - white_elo.0 as f64).abs();
+//     max_draw_probability / (1.0 + rating_difference_sensitivity * rating_diff)
+// }
 fn probability_of_draw(white_elo: &Rating, black_elo: &Rating) -> f64 {
-    // Constants for draw probability estimation
-    let max_draw_probability = 0.18; // Upper limit of draw probability
-    let rating_difference_sensitivity = 0.05; // Adjusts sensitivity to rating difference
-    let rating_diff = (black_elo.0 as f64 - white_elo.0 as f64).abs();
-    max_draw_probability / (1.0 + rating_difference_sensitivity * rating_diff)
+    let base_probability = 0.33; // Starting probability when Elo difference is 0
+    let decay_rate = 0.01; // Rate at which probability decreases
+    let exponent_factor = 0.88; // Factor to adjust the curve of the decrease
+    let elo_difference = (black_elo.0 as f64 - white_elo.0 as f64).abs();
+    base_probability * (-decay_rate * elo_difference.powf(exponent_factor)).exp()
 }
 
 // estimate probability of white winning, given two Elo ratings
